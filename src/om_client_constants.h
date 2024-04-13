@@ -1,0 +1,7 @@
+#ifndef OM_CONSTANTS_H
+#define OM_CONSTANTS_H
+
+
+#define OM_CLIENT_MAX_RESPONSE_LENGTH 2048
+
+#endif
