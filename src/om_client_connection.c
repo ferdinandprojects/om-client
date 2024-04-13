@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 
-void om_fatal() {
+static void om_client_fatal() {
     char str[11 + 3];
     strcpy(str, "om-client: ");
     strcat(str, "%s\n");
@@ -28,7 +28,7 @@ int om_client_connection_open(const char *addr, uint16_t port, uint16_t timeout)
 
     int fd = socket(PF_INET, SOCK_STREAM, 0);
     if(connect(fd, (struct sockaddr *) &server, sizeof(server)) == -1) {
-      om_fatal();
+      om_client_fatal();
       return -1;
     } 
 
