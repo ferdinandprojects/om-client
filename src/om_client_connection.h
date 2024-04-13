@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-int om_client_commection_open(const char *addr, uint16_t port, uint16_t timeout);
+int om_client_connection_open(const char *addr, uint16_t port, uint16_t timeout);
 
 int om_client_connection_write(int fd, const char *request, const int request_len);
     

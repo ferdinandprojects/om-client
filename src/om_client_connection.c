@@ -9,16 +9,15 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 
-void om_fatal(char* message) {
-    char str[strlen(message) + 3];
-    strcpy(str, message);
+void om_fatal() {
+    char str[11 + 3];
+    strcpy(str, "om-client: ");
     strcat(str, "%s\n");
     printf(str, strerror(errno));
-    exit(1);
+    fflush(stdout);
 }
 
-
-int om_client_commection_open(const char *addr, uint16_t port, uint16_t timeout) {
+int om_client_connection_open(const char *addr, uint16_t port, uint16_t timeout) {
 
     struct sockaddr_in server;
 
@@ -29,7 +28,8 @@ int om_client_commection_open(const char *addr, uint16_t port, uint16_t timeout)
 
     int fd = socket(PF_INET, SOCK_STREAM, 0);
     if(connect(fd, (struct sockaddr *) &server, sizeof(server)) == -1) {
-      om_fatal("error");
+      om_fatal();
+      return -1;
     } 
 
     struct timeval tv;
@@ -47,7 +47,6 @@ int om_client_connection_write(int fd, const char *request, const int request_le
 int om_client_connection_read(int fd, char *response, int response__len) {
     return recv(fd, response, response__len, 0);
 }
-
 
 void om_client_connection_close(int fd) {
     close(fd);

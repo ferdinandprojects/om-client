@@ -27,7 +27,7 @@ static const char* OM_RESPONSE_ERROR = "HTTP/1.1 500 Internal Server Error\r\nCo
 static const int OM_RESPONSE_ERROR_LENGTH = 57; 
 
 
-static void om_client_send(int fd, const char* data, const int len) {
+static int om_client_send(int fd, const char* data, const int len) {
 
     char len_str[5]; //5 - max len of content-length string
     sprintf(len_str, "%d", len);
@@ -40,7 +40,7 @@ static void om_client_send(int fd, const char* data, const int len) {
     memcpy(request + PACKET_START_LEN + len_str_size, "\r\n\r\n", 4);
     memcpy(request + PACKET_START_LEN + len_str_size + 4, data, len);
 
-    om_client_connection_write(fd, request, PACKET_START_LEN + len_str_size + 4 + len);
+    return om_client_connection_write(fd, request, PACKET_START_LEN + len_str_size + 4 + len);
 }
 
 static int om_client_receive(int fd, char *data, int *len) {
@@ -81,10 +81,15 @@ static int om_client_receive(int fd, char *data, int *len) {
 int om_client_invoke(const char *addr, uint16_t port, const char *request_body, const int request_body_len, char *response_body, int *response_body_len) {
 
     char response[OM_CLIENT_MAX_RESPONSE_LENGTH];
-    int fd = om_client_commection_open(addr, port, 5);
-    om_client_send(fd, request_body, request_body_len);
-    om_client_receive(fd, response_body, response_body_len);
+    int fd = om_client_connection_open(addr, port, OM_CLIENT_READING_TIMEOUT_SEC);
+    if (fd == -1)
+        return OM_CLIENT_INTERNAL_ERROR;
+    
+    if (om_client_send(fd, request_body, request_body_len) == -1)
+        return OM_CLIENT_INTERNAL_ERROR;
+
+    int res = om_client_receive(fd, response_body, response_body_len);
     om_client_connection_close(fd);
-    return 0;
+    return res;
 }
 

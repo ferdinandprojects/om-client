@@ -22,10 +22,14 @@ int main(int argc, char* argv[]) {
     char response[1000];
     int response_len;
 
-    om_client_invoke("127.0.0.1", 5005, request, len, response, &response_len);
+    int res = om_client_invoke("127.0.0.1", 5005, request, len, response, &response_len);
 
-    response[response_len] = '\0';
-    printf("response length: %d\n", response_len);
-    printf("BODY: %s\n", response);
+    printf("result: %d\n", res);
+
+    if (res == OM_CLIENT_RESPONSE_OK) {
+        response[response_len] = '\0';
+        printf("response length: %d\n", response_len);
+        printf("BODY: %s\n", response);
+    }
 }
 
